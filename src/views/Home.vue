@@ -1,13 +1,14 @@
 <template>
-  <div class="home container-fluid">
-    <img class="home__logo" alt="Vue logo" :src="logo">
-    <section class="search-box">
-      <search-input v-model="term" class="search-box__input"></search-input>
-      <div class="search-box__actions">
-        <Button :buttonStyles="['secondary']">Pesquisar</Button>
+  <div class="home">
+    <img class="home__logo" alt="App small logo" :src="logo">
+    <form class="search-box">
+      <search-input v-model="term" class="search-box__input mx-auto max-w-md"
+                    @search="search"></search-input>
+      <section class="search-box__actions">
+        <Button :buttonStyles="['secondary']" @click.prevent="search">Pesquisar</Button>
         <Button :buttonStyles="['secondary']">Pesquisa Avançada</Button>
-      </div>
-    </section>
+      </section>
+    </form>
   </div>
 </template>
 
@@ -15,7 +16,7 @@
 import { Options, Vue } from 'vue-class-component'
 import SearchInput from '@/components/SearchInput.vue'
 import Button from '@/components/Button.vue'
-import { InjectReactive } from 'vue-property-decorator'
+import { RouteNames } from '@/router/route-names'
 
 @Options({
   components: {
@@ -24,13 +25,24 @@ import { InjectReactive } from 'vue-property-decorator'
   }
 })
 export default class Home extends Vue {
-  @InjectReactive()
-  darkMode!: boolean
+  get darkMode (): boolean {
+    return this.$store.getters.darkMode
+  }
 
   term = ''
 
   get logo (): string {
     return require(`@/assets/${this.darkMode ? 'logo-dark.png' : 'logo.png'}`)
+  }
+
+  search (): void {
+    if (!this.term) {
+      return
+    }
+    this.$router.push({
+      name: RouteNames.Search,
+      query: { q: this.term }
+    })
   }
 }
 </script>
@@ -46,6 +58,7 @@ export default class Home extends Vue {
   width: 100%;
 
   &__logo {
+    height: 200px;
     margin: 40px auto;
   }
 }

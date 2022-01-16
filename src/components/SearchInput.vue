@@ -1,10 +1,12 @@
 <template>
-  <div class="flex relative mx-auto max-w-md">
-    <input v-model="value" type="search" placeholder="Procurar"
-           class="border-2 border-secondary-a-500 bg-red transition h-12 px-5 pr-12 rounded-4xl focus:outline-none w-full text-black text-lg
-                  dark:text-background-dark"/>
-    <button class="absolute right-2 top-3 mr-4 text-secondary dark:text-background-dark">
-      <fa-icon icon="search"></fa-icon>
+  <div class="flex relative">
+    <input v-model="value" type="search" :placeholder="$t('words.search')" :class="inputStyles"
+           class="bg-red transition px-5 pr-12 w-full text-black
+                  border-2 border-secondary-a-500 rounded-4xl
+                  dark:text-background-dark focus:outline-none"/>
+    <button :class="buttonStyles" class="absolute text-secondary dark:text-background-dark w-4"
+            @click.prevent="this.$emit('search')" :title="$t('words.search')">
+      <fa-icon icon="search" class="w-100 h-full"></fa-icon>
     </button>
   </div>
 </template>
@@ -13,11 +15,27 @@
 import { Options, Vue } from 'vue-class-component'
 
 @Options({
-  props: ['modelValue'],
-  emits: ['update:modelValue']
+  props: {
+    modelValue: {
+      type: String
+    },
+    inputStyles: {
+      type: Array,
+      default: ['text-lg', 'h-12']
+    },
+    buttonStyles: {
+      type: Array,
+      default: ['right-5', 'top-3']
+    }
+  },
+  emits: ['update:modelValue', 'search']
 })
 export default class SearchInput extends Vue {
-  modelValue = ''
+  modelValue!: string
+
+  inputStyles!: Array<string>
+
+  buttonStyles!: Array<string>
 
   get value (): string {
     return this.modelValue
@@ -30,4 +48,7 @@ export default class SearchInput extends Vue {
 </script>
 
 <style scoped>
+.w-100 {
+  width: 100%;
+}
 </style>

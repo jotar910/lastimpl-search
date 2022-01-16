@@ -1,36 +1,24 @@
 <template>
-  <nav id="nav">
-    <router-link to="/">Home</router-link>
-    <router-link to="/about">About</router-link>
-    <button @click="dark = !darkMode" class="nav__dark">{{ dark ? 'Light' : 'Dark' }}</button>
-  </nav>
-  <main id="content">
-    <router-view/>
-  </main>
+  <template v-if="routeReady">
+    <navbar></navbar>
+    <main id="content">
+      <router-view/>
+    </main>
+  </template>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-class-component'
-import { ProvideReactive } from 'vue-property-decorator'
+import { Options, Vue } from 'vue-class-component'
+import Navbar from '@/components/Navbar.vue'
 
+@Options({
+  components: { Navbar }
+})
 export default class App extends Vue {
-  @ProvideReactive()
-  darkMode = true
+  routeReady = false
 
-  get dark (): boolean {
-    return this.darkMode
-  }
-
-  set dark (value: boolean) {
-    const html = document.querySelector('html')
-    if (html) {
-      value ? html.classList.add('dark') : html.classList.remove('dark')
-    }
-    this.darkMode = value
-  }
-
-  created (): void {
-    this.dark = false
+  async mounted (): Promise<void> {
+    this.routeReady = await this.$router.isReady().catch().then(() => true)
   }
 }
 </script>
@@ -45,6 +33,10 @@ export default class App extends Vue {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#content {
+  overflow: hidden;
 }
 
 #nav {

@@ -47,7 +47,7 @@ module.exports = {
         purple: '#7e5bef',
         pink: '#ff49db',
         orange: '#ff7849',
-        green: '#13ce66',
+        greenish: '#13ce66',
         yellow: '#ffc82c',
         'gray-dark': '#273444',
         grayish: '#8492a6',
@@ -56,6 +56,9 @@ module.exports = {
       spacing: {
         128: '32rem',
         144: '36rem'
+      },
+      fontSize: {
+        '2xs': '.5rem'
       },
       borderRadius: {
         '4xl': '2rem'
