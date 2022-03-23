@@ -1,5 +1,5 @@
 export interface ProjectItemFileModel {
-  id: string;
+  id: number;
   name: string;
 }
 

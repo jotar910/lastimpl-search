@@ -22,10 +22,10 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue'
-import { Options, Vue } from 'vue-class-component'
-import { ProjectItemModel } from '@/models/project/project-item.model'
-import Button from '@/components/Button.vue'
+import { PropType } from 'vue';
+import { Options, Vue } from 'vue-class-component';
+import { ProjectItemModel } from '@/models/project/project-item.model';
+import Button from '@/components/Button.vue';
 
 @Options({
   components: { 'p-button': Button },
@@ -37,10 +37,10 @@ import Button from '@/components/Button.vue'
   }
 })
 export default class SearchResultItem extends Vue {
-  project!: ProjectItemModel
+  project!: ProjectItemModel;
 
-  get updatedAtStringDate (): string {
-    return new Date(this.project.updatedAt).toLocaleString()
+  get updatedAtStringDate(): string {
+    return new Date(this.project.updatedAt).toLocaleString();
   }
 }
 </script>

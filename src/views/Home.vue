@@ -1,22 +1,22 @@
 <template>
-  <div class="home">
+  <div class="home container m-auto">
     <img class="home__logo" alt="App small logo" :src="logo">
     <form class="search-box">
       <search-input v-model="term" class="search-box__input mx-auto max-w-md"
                     @search="search"></search-input>
       <section class="search-box__actions">
-        <Button :buttonStyles="['secondary']" @click.prevent="search">Pesquisar</Button>
-        <Button :buttonStyles="['secondary']">Pesquisa Avançada</Button>
+        <Button :buttonStyles="['secondary']" @click.prevent="search">{{ $t('home.search') }}</Button>
+        <Button :buttonStyles="['secondary']">{{ $t('home.advancedSearch') }}</Button>
       </section>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
-import SearchInput from '@/components/SearchInput.vue'
-import Button from '@/components/Button.vue'
-import { RouteNames } from '@/router/route-names'
+import { Options, Vue } from 'vue-class-component';
+import SearchInput from '@/components/SearchInput.vue';
+import Button from '@/components/Button.vue';
+import { RouteNames } from '@/router/route-names';
 
 @Options({
   components: {
@@ -26,23 +26,23 @@ import { RouteNames } from '@/router/route-names'
 })
 export default class Home extends Vue {
   get darkMode (): boolean {
-    return this.$store.getters.darkMode
+    return this.$store.getters.darkMode;
   }
 
-  term = ''
+  term: string = '';
 
   get logo (): string {
-    return require(`@/assets/${this.darkMode ? 'logo-dark.png' : 'logo.png'}`)
+    return require(`@/assets/${this.darkMode ? 'logo-dark.png' : 'logo.png'}`);
   }
 
   search (): void {
     if (!this.term) {
-      return
+      return;
     }
     this.$router.push({
       name: RouteNames.Search,
       query: { q: this.term }
-    })
+    });
   }
 }
 </script>

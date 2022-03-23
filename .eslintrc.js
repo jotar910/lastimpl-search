@@ -14,6 +14,16 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'space-before-function-paren': 'off'
+    'space-before-function-paren': 'off',
+    'comma-style': 'error',
+    semi: 'off',
+    'no-unused-expressions': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/semi': 'error',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    indent: [
+      'error',
+      2
+    ]
   }
-}
+};

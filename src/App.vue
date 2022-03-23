@@ -4,21 +4,29 @@
     <main id="content">
       <router-view/>
     </main>
+    <confirmation v-if="$store.getters['confirmation/open']"/>
+    <toast/>
   </template>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
-import Navbar from '@/components/Navbar.vue'
+import { Options, Vue } from 'vue-class-component';
+import Confirmation from '@/components/Confirmation.vue';
+import Navbar from '@/components/Navbar.vue';
+import Toast from '@/components/Toast.vue';
 
 @Options({
-  components: { Navbar }
+  components: {
+    Confirmation,
+    Navbar,
+    Toast
+  }
 })
 export default class App extends Vue {
-  routeReady = false
+  routeReady = false;
 
-  async mounted (): Promise<void> {
-    this.routeReady = await this.$router.isReady().catch().then(() => true)
+  async mounted(): Promise<void> {
+    this.routeReady = await this.$router.isReady().catch().then(() => true);
   }
 }
 </script>
@@ -44,12 +52,10 @@ export default class App extends Vue {
   padding: 20px 30px;
 
   a {
-    @apply text-secondary dark:text-white;
-    color: #2c3e50;
-    margin-right: 20px;
+    @apply text-gray-500 dark:text-gray-200 mr-5;
 
     &.router-link-exact-active {
-      @apply inline-block text-primary dark:text-white transform-gpu scale-110 -translate-x-0.5 -translate-y-0.5 transition-transform ease-out duration-75;
+      @apply inline-block text-gray-800 dark:text-white transform-gpu scale-110 -translate-x-0.5 -translate-y-0.5 transition-transform ease-out duration-75;
     }
   }
 

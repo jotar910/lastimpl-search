@@ -1,37 +1,41 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 // eslint-disable-next-line import/no-named-default
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
-// Tailwind
-import '@/styles/tailwind.scss'
-import '@/styles/abstract.scss'
+import '@/styles/tailwind.scss'; // Tailwind's Style
+import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
+import '@toast-ui/editor/dist/theme/toastui-editor-dark.css'; // Editor's Style
+import '@/styles/toast-ui.scss';
+import '@/styles/abstract.scss';
 
 // Font-awesome
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
+import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
+import { faSave } from '@fortawesome/free-solid-svg-icons/faSave';
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 // i18n
-import { createI18n } from 'vue-i18n'
-import messagesPT from '@/locales/messages-pt-PT'
+import i18n from '@/i18n';
 
-const app = createApp(App)
+const app = createApp(App);
 
-library.add(faSearch)
+library.add(faChevronDown);
+library.add(faChevronUp);
+library.add(faPencilAlt);
+library.add(faPlus);
+library.add(faSave);
+library.add(faSearch);
+library.add(faXmark);
 
-app.component('fa-icon', FontAwesomeIcon)
+app.component('fa-icon', FontAwesomeIcon);
 
-const i18n = createI18n({
-  silentTranslationWarn: true,
-  globalInjection: true,
-  legacy: false,
-  locale: 'pt-PT',
-  messages: {
-    'pt-PT': messagesPT
-  }
-})
+app.use(store).use(router).use(i18n);
 
-app.use(store).use(router).use(i18n)
-  .mount('#app')
+app.mount('#app');

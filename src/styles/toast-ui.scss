@@ -1,0 +1,24 @@
+.dark {
+  .toastui-editor-dark {
+    .toastui-editor-defaultUI {
+      border: 1px solid #777e86;
+    }
+
+    .toastui-editor-md-container,
+    .toastui-editor-ww-container {
+      background-color: #232b36;
+    }
+
+    .toastui-editor-md-tab-container,
+    .toastui-editor-defaultUI-toolbar,
+    .toastui-editor-mode-switch {
+      background-color: #262e38;
+    }
+
+    .tab-item {
+      &.active {
+        background-color: #232b36;
+      }
+    }
+  }
+}

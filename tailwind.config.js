@@ -32,6 +32,9 @@ module.exports = {
           800: 'rgba(103,105,114,0.8)',
           900: 'rgba(103,105,114,0.9)'
         },
+        'white-a': {
+          800: 'rgba(255,255,255,0.8)'
+        },
         background: {
           light: '#f8feff',
           dark: '#2b3542'
@@ -43,6 +46,7 @@ module.exports = {
             700: 'rgba(95,105,118,0.7)'
           }
         },
+        'light-blue': '#5fa1f5',
         blueish: '#1fb6ff',
         purple: '#7e5bef',
         pink: '#ff49db',
@@ -62,6 +66,9 @@ module.exports = {
       },
       borderRadius: {
         '4xl': '2rem'
+      },
+      boxShadow: {
+        white: '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)'
       }
     }
   },
@@ -69,4 +76,4 @@ module.exports = {
     extend: {}
   },
   plugins: []
-}
+};

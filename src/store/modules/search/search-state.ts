@@ -1,9 +1,9 @@
-import { ProjectListModel } from '@/models/project/project-list.model'
-import { ErrorModel } from '@/models/error.model'
+import { ProjectListModel } from '@/models/project/project-list.model';
+import { ErrorModel } from '@/models/error.model';
 
 export interface SearchState {
   controller: AbortController;
-  query: string | null,
+  query: string | null;
   querying: boolean;
   error: ErrorModel | null;
   results: ProjectListModel | null;
@@ -15,4 +15,4 @@ export const searchState = (): SearchState => ({
   querying: false,
   error: null,
   results: null
-})
+});
