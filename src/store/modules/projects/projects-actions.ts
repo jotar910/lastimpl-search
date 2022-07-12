@@ -1,21 +1,28 @@
 import { ActionContext, ActionTree } from 'vuex';
-import projectsApi from '@/api/projects.api';
+import projectsApi from '@/api/project/projects.api';
 import { StoreState } from '@/store/store.model';
 import { ProjectsState } from '@/store/modules/projects/projects-state';
-import { ProjectListModel } from '@/models/project/project-list.model';
 import { emptyProjectListFilters, ProjectListFiltersModel } from '@/models/project/project-list-filters.model';
 import { ProjectCodeFileModel } from '@/models/project/project-code-file.model';
-import { Combinator } from '@/utils/types.utils';
+import { Combinator, newCombinedValue } from '@/utils/types.utils';
 import {
   createProjectCodeFilesView,
   findProjectFileIndex,
   ProjectCodeFilesViewModel,
   updateProjectFile
 } from '@/models/project/project-code-files-view.model';
-import { ProjectItemModel } from '@/models/project/project-item.model';
+import { ProjectItemContext, ProjectItemDetailsModel, ProjectItemModel } from '@/models/project/project-item.model';
 import { emptyProjectCodeFileView, ProjectCodeFileViewModel } from '@/models/project/project-code-file-view.model';
 import { mapToProjectCodeFile, mapToProjectCodeFileView } from '@/utils/projects/project.mappers';
 import { newToastError } from '@/models/toast-options.model';
+import { omit } from 'lodash';
+import { ProjectListResponse } from '@/responses/project/project-list.response';
+import { ProjectsMappers } from '@/api/project/projects.mappers';
+import { ProjectListModel } from '@/models/project/project-list.model';
+import { emptyProject, ProjectModel } from '@/models/project/project.model';
+import { globalI18n } from '@/i18n';
+import { UUID } from '@/utils/uuid.utils';
+import { createEditableField } from '@/models/editable-field.model';
 
 interface ProjectsActions {
   updateFilters(context: ActionContext<ProjectsState, StoreState>, filters: Partial<ProjectListFiltersModel>): void;
@@ -57,17 +64,9 @@ export const projectsActions: ActionTree<ProjectsState, StoreState> & ProjectsAc
     context.commit('searchListStarted');
     context.commit('setFilters', filtersData);
     try {
-      const projects: ProjectListModel = await projectsApi.searchList(context.state.searchListController, filtersData);
-      const editingProjectsSet: Set<string> = new Set<string>(Object.keys(context.state.editingProjectFiles));
-      for (const item of projects.data) {
-        editingProjectsSet.delete(item.id.toString());
-      }
-      const editingProjects: ProjectItemModel[] = [];
-      for (const id of editingProjectsSet) {
-        editingProjects.push(context.state.editingProjectFiles[+id].project);
-      }
-      projects.data = [...editingProjects, ...projects.data];
-      context.commit('setListResults', projects);
+      const projects: ProjectListResponse = await projectsApi.searchList(context.state.searchListController, filtersData);
+      context.commit('setListResults', ProjectsMappers.mapProjectList(projects, context.state.editingProjectFiles,
+        context.state.editingProjectDetails));
     } catch (e) {
       // TODO: log the error
       context.commit('searchListError', e);
@@ -165,22 +164,134 @@ export const projectsActions: ActionTree<ProjectsState, StoreState> & ProjectsAc
       selected: selectFile
     });
   },
+  async saveProjectName(context: ActionContext<ProjectsState, StoreState>, projectContextName: Combinator<ProjectItemContext, string>): Promise<void> {
+    const projectId: number = projectContextName.a.item.id;
+    context.commit('saveProjectNameStarted', projectId);
+    try {
+      await projectsApi.saveProjectDetail(projectId, { name: projectContextName.b });
+      context.commit('saveProjectNameStopped', newCombinedValue(projectId, projectContextName.a.idx));
+      context.dispatch('clearEditingProjectName', projectId);
+    } catch (error: unknown) {
+      // TODO: log the error
+      context.commit('updateEditableProjectDetails', {
+        a: projectId,
+        b: {
+          ...context.getters.editingDetails(projectId) ?? {},
+          name: projectContextName.b
+        }
+      });
+      context.commit('saveProjectNameError', {
+        a: projectId,
+        b: error
+      });
+      context.commit('toast/add', newToastError('common.error',
+        'errors.saveProjectName'), { root: true });
+    }
+  },
+  async saveProjectDescription(context: ActionContext<ProjectsState, StoreState>, projectContextDescription: Combinator<ProjectItemContext, string>): Promise<void> {
+    const projectId: number = projectContextDescription.a.item.id;
+    context.commit('saveProjectDescriptionStarted', projectId);
+    try {
+      await projectsApi.saveProjectDetail(projectId, { description: projectContextDescription.b });
+      context.commit('saveProjectDescriptionStopped', newCombinedValue(projectId, projectContextDescription.a.idx));
+      context.dispatch('clearEditingProjectDescription', projectId);
+    } catch (error: unknown) {
+      // TODO: log the error
+      context.commit('updateEditableProjectDetails', {
+        a: projectId,
+        b: {
+          ...context.getters.editingDetails(projectId) ?? {},
+          description: projectContextDescription.b
+        }
+      });
+      context.commit('saveProjectDescriptionError', {
+        a: projectId,
+        b: error
+      });
+      context.commit('toast/add', newToastError('common.error',
+        'errors.saveProjectDescription'), { root: true });
+    }
+  },
+  clearEditingProjectName(context: ActionContext<ProjectsState, StoreState>, projectId: number): void {
+    const editingDetails: Partial<ProjectItemDetailsModel> = context.getters.editingDetails(projectId) ?? {};
+    if (editingDetails.name === undefined) {
+      return;
+    }
+    if (Object.keys(editingDetails).length === 1) {
+      context.commit('removeEditableProjectDetails', projectId);
+      return;
+    }
+    context.commit('updateEditableProjectDetails', newCombinedValue(projectId, omit(editingDetails, 'name')));
+  },
+  clearEditingProjectDescription(context: ActionContext<ProjectsState, StoreState>, projectId: number): void {
+    const editingDetails: Partial<ProjectItemDetailsModel> = context.getters.editingDetails(projectId) ?? {};
+    if (editingDetails.description === undefined) {
+      return;
+    }
+    if (Object.keys(editingDetails).length === 1) {
+      context.commit('removeEditableProjectDetails', projectId);
+      return;
+    }
+    context.commit('updateEditableProjectDetails', newCombinedValue(projectId, omit(editingDetails, 'description')));
+  },
   async saveProjectFiles(context: ActionContext<ProjectsState, StoreState>, projectId: number): Promise<void> {
     context.commit('saveProjectFilesStarted', projectId);
     try {
       const editingFiles: ProjectCodeFilesViewModel = context.getters.editingFiles(projectId);
       await projectsApi.saveProjectFiles(projectId, mapToProjectCodeFile(editingFiles.cur));
-      const projectList: ProjectListModel = await projectsApi.searchList(context.state.searchListController, context.state.listFilters!);
-      context.commit('updateListResult', projectList);
+      const projectList: ProjectListResponse = await projectsApi.searchList(context.state.searchListController, context.state.listFilters!);
+      context.commit('updateListResult', ProjectsMappers.mapProjectList(projectList, context.state.editingProjectFiles,
+        context.state.editingProjectDetails));
       context.commit('removeEditableProjectFiles', projectId);
-    } catch (e) {
+    } catch (error: unknown) {
       // TODO: log the error
       context.commit('saveProjectFilesError', {
         a: projectId,
-        b: e
+        b: error
       });
       context.commit('toast/add', newToastError('common.error',
         'errors.saveFiles'), { root: true });
+    }
+  },
+  async createNewProject(context: ActionContext<ProjectsState, StoreState>): Promise<void> {
+    context.commit('createProjectStarted');
+    try {
+      const newProject: ProjectModel = await projectsApi.createNewProject(
+        emptyProject(globalI18n.t('project.defaults.name', { random: UUID.v4() }), globalI18n.t('project.defaults.description'))
+      );
+      context.commit('updateListResult', {
+        ...context.getters.listResults,
+        data: [
+          {
+            ...newProject,
+            name: createEditableField(newProject.name),
+            description: createEditableField(newProject.name)
+          },
+          ...context.getters.listResults.data
+        ]
+      } as ProjectListModel);
+      context.commit('createProjectStopped');
+    } catch (error: unknown) {
+      // TODO: log the error
+      context.commit('createProjectError', error);
+      context.commit('toast/add', newToastError('common.error',
+        'errors.createProject'), { root: true });
+    }
+  },
+  async deleteProject(context: ActionContext<ProjectsState, StoreState>, projectId: number): Promise<void> {
+    context.commit('deleteProjectStarted', projectId);
+    try {
+      await projectsApi.deleteProject(projectId);
+      context.commit('updateListResult', {
+        ...context.getters.listResults,
+        data: context.getters.listResults.data.filter((project: ProjectItemModel) => project.id !== projectId)
+      } as ProjectListModel);
+      context.commit('deleteProjectStopped');
+    } catch (error: unknown) {
+      // TODO: log the error
+      context.commit('deleteProjectError', error);
+      context.commit('toast/add', newToastError('common.error',
+        'errors.deleteProject'), { root: true });
     }
   }
 };

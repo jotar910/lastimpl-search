@@ -5,10 +5,10 @@ export interface ProjectCodeFileViewModel extends ProjectCodeFileModel {
   internalId: string;
 }
 
-export function emptyProjectCodeFileView(): ProjectCodeFileViewModel {
+export function emptyProjectCodeFileView(name: string = ''): ProjectCodeFileViewModel {
   return {
-    internalId: UUID.v4(),
-    name: '',
-    content: ''
+    name,
+    content: '',
+    internalId: UUID.v4()
   };
 }

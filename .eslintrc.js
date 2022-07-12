@@ -18,6 +18,7 @@ module.exports = {
     'comma-style': 'error',
     semi: 'off',
     'no-unused-expressions': 'off',
+    'no-return-assign': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/semi': 'error',
     '@typescript-eslint/no-inferrable-types': 'off',

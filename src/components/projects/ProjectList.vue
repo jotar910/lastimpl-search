@@ -6,9 +6,11 @@
                     :button-styles="['right-3', 'w-3 md:w-4', 'top-0.5 md:top-2', 'm-auto']"
                     @search="searchList" @keyup.enter="searchList">
       </search-input>
-      <fa-icon icon="plus" class="text-secondary md:text-lg m-2 md:mx-5 cursor-pointer hover:opacity-50
-                                  dark:text-gray-200"></fa-icon>
+      <button class="hover:opacity-50" :disabled="creatingNew" @click="$store.dispatch('projects/createNewProject')">
+        <fa-icon icon="plus" class="text-secondary md:text-lg m-2 md:mx-5 dark:text-gray-200"></fa-icon>
+      </button>
     </section>
+    <global-loading v-if="!loadingList && creatingNew"></global-loading>
     <global-loading v-if="loadingList"></global-loading>
     <template v-else-if="projects.length">
       <project-item v-for="item of projects" :key="item.id" :project="item" class="mb-8"/>
@@ -29,9 +31,11 @@ import SearchInput from '@/components/SearchInput.vue';
 import { ProjectListFiltersModel } from '@/models/project/project-list-filters.model';
 import { ProjectItemModel } from '@/models/project/project-item.model';
 import { ProjectListModel } from '@/models/project/project-list.model';
+import Button from '@/components/Button.vue';
 
 @Options({
   components: {
+    Button,
     ConfirmationContainer: Confirmation,
     GlobalLoading,
     ProjectItem,
@@ -39,31 +43,35 @@ import { ProjectListModel } from '@/models/project/project-list.model';
   }
 })
 export default class ProjectList extends Vue {
-  get loadingList (): boolean {
+  get loadingList(): boolean {
     return this.$store.getters['projects/listLoading'];
   }
 
-  get term (): string {
+  get creatingNew(): boolean {
+    return this.$store.getters['projects/createProjectLoading'];
+  }
+
+  get term(): string {
     return this.filters?.query ?? '';
   }
 
-  set term (value: string) {
+  set term(value: string) {
     this.$store.dispatch('projects/updateFilters', { query: value });
   }
 
-  get projects (): ProjectItemModel[] {
+  get projects(): ProjectItemModel[] {
     return this.projectsList?.data ?? [];
   }
 
-  private get projectsList (): ProjectListModel | null {
+  private get projectsList(): ProjectListModel | null {
     return this.$store.getters['projects/listResults'];
   }
 
-  private get filters (): ProjectListFiltersModel | null {
+  private get filters(): ProjectListFiltersModel | null {
     return this.$store.getters['projects/listFilters'];
   }
 
-  beforeMount (): void {
+  beforeMount(): void {
     this.term = this.$route.query.q as string ?? '';
     this.search(this.filters);
   }
@@ -72,7 +80,7 @@ export default class ProjectList extends Vue {
     this.$store.commit('projects/clearList');
   }
 
-  created (): void {
+  created(): void {
     this.$watch(() => this.$route.query, (curQuery: Record<string, string>) => {
       this.search({
         query: curQuery.q as string ?? ''
@@ -80,7 +88,7 @@ export default class ProjectList extends Vue {
     });
   }
 
-  searchList (): void {
+  searchList(): void {
     this.$router.push({
       name: RouteNames.ProjectsList,
       query: {
@@ -89,7 +97,7 @@ export default class ProjectList extends Vue {
     });
   }
 
-  private search (filters: ProjectListFiltersModel | null): void {
+  private search(filters: ProjectListFiltersModel | null): void {
     this.$store.dispatch('projects/searchList', filters);
   }
 }

@@ -16,8 +16,10 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { faSave } from '@fortawesome/free-solid-svg-icons/faSave';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -30,8 +32,10 @@ library.add(faChevronDown);
 library.add(faChevronUp);
 library.add(faPencilAlt);
 library.add(faPlus);
+library.add(faRotateRight);
 library.add(faSave);
 library.add(faSearch);
+library.add(faTrash);
 library.add(faXmark);
 
 app.component('fa-icon', FontAwesomeIcon);

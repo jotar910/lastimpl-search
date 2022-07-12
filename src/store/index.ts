@@ -9,7 +9,11 @@ import { toastModule } from '@/store/modules/toast/toast-module';
 
 const storePlugins: ((store: Store<StoreState>) => void)[] = [
   createStoragePlugin({
-    localStorageKeys: ['darkMode', 'projects.editingProjectFiles'],
+    localStorageKeys: [
+      'darkMode',
+      'projects.editingProjectDetails',
+      'projects.editingProjectFiles'
+    ],
     sessionStorageKeys: []
   }),
   createLoadStorePlugin()

@@ -1,7 +1,5 @@
-export interface CommonListModel<T> {
-  totalItems: number;
-  totalPages: number;
-  page: number;
-  count: number;
+import { PaginationListModel } from '@/models/pagination-list.model';
+
+export interface CommonListModel<T> extends PaginationListModel {
   data: T[];
 }

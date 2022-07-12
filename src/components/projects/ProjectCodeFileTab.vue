@@ -1,16 +1,14 @@
 <template>
   <a :class="{'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer': !selected,
         'text-blue-600 border-blue-600 active dark:text-blue-500 dark:border-blue-500': selected}"
-     class="inline-block py-3 px-3 text-sm font-medium text-center rounded-t-lg border-b-2 relative"
+     class="flex py-3 px-3 text-sm font-medium text-center rounded-t-lg border-b-2 relative"
      @click="!selected && selectFile()">
-    <button class="mr-2" :class="{'hover-btn': !editing}" @click.stop="!editing && startEdit()">
+    <button class="mr-2" :class="{'invisible': !$refs.nameInput?.editing}">
       <fa-icon :class="{'text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300': !selected,
                   'text-blue-600 dark:text-blue-500': selected}"
                icon="pencil-alt" size="sm"/>
     </button>
-    <span>{{ editing ? name : name || $t('common.unknown') }}</span>
-    <input v-if="editing" type="text" v-model="name" ref="nameInput" class="none w-0 h-0"
-           @keyup.esc="cancelEdit" @keyup.enter="stopEdit" @blur="stopEdit">
+    <editable-box v-model="name" ref="nameInput"/>
     <button class="mx-2" @click.stop="deleteFile">
       <fa-icon :class="{'text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300': !selected,
                   'text-blue-600 dark:text-blue-500': selected}"
@@ -25,8 +23,12 @@ import { newCombinedValue } from '@/utils/types.utils';
 import { createDeleteOptions } from '@/models/confirmation-options.model';
 import { ProjectCodeFileViewModel } from '@/models/project/project-code-file-view.model';
 import { findProjectFile } from '@/models/project/project-code-files-view.model';
+import EditableBox from '@/components/EditableBox.vue';
 
 @Options({
+  components: {
+    EditableBox
+  },
   props: {
     fileId: {
       type: String,
@@ -46,12 +48,10 @@ export default class ProjectCodeFileTab extends Vue {
 
   selected: boolean = false;
 
-  editing: boolean = false;
-
-  $refs!: { nameInput: HTMLInputElement };
+  $refs!: { nameInput?: EditableBox };
 
   get name(): string {
-    return this.file.name;
+    return this.$refs.nameInput?.editing ? this.file.name : this.file.name || this.$t('common.unknown');
   }
 
   set name(value: string) {
@@ -63,31 +63,6 @@ export default class ProjectCodeFileTab extends Vue {
 
   get file(): ProjectCodeFileViewModel {
     return findProjectFile(this.$store.getters['projects/editingFiles'](this.projectId), this.fileId);
-  }
-
-  private fileName!: string;
-
-  mounted(): void {
-    this.fileName = this.file.name;
-  }
-
-  startEdit(): void {
-    this.editing = true;
-    this.$nextTick(() => this.$refs.nameInput.focus());
-  }
-
-  stopEdit(): void {
-    if (!this.name) {
-      this.cancelEdit();
-      return;
-    }
-    this.fileName = this.name;
-    this.editing = false;
-  }
-
-  cancelEdit(): void {
-    this.name = this.fileName;
-    this.editing = false;
   }
 
   selectFile(): void {

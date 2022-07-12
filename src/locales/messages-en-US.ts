@@ -16,8 +16,12 @@ export default {
     yes: 'Yes'
   },
   errors: {
+    createProject: 'Error creating new project',
+    deleteProject: 'Error deleting project',
     loadFiles: 'Error loading files',
-    saveFiles: 'Error saving files'
+    saveFiles: 'Error saving files',
+    saveProjectName: 'Error saving project name',
+    saveProjectDescription: 'Error saving project description'
   },
   home: {
     advancedSearch: 'Advanced Search',
@@ -26,6 +30,12 @@ export default {
   navbar: {
     home: 'Home',
     projects: 'Projects'
+  },
+  project: {
+    defaults: {
+      name: 'Project *{random}*',
+      description: 'Write the project description...'
+    }
   },
   search: {
     notFound: 'No results found.'

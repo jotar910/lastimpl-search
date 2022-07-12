@@ -68,7 +68,11 @@ module.exports = {
         '4xl': '2rem'
       },
       boxShadow: {
-        white: '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)'
+        white: '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)',
+        gray: '0 1px 3px 0 rgba(122, 122, 122, 0.1), 0 1px 2px 0 rgba(122, 122, 122, 0.06)'
+      },
+      gridAutoColumns: {
+        '0-max': 'minmax(0, max-content)'
       }
     }
   },

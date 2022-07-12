@@ -1,20 +1,18 @@
 <template>
-  <div class="border-b border-gray-200 dark:border-gray-700">
-    <ul class="flex -mb-px">
+  <div class="flex border-b border-gray-200 dark:border-gray-700">
+    <ul class="flex -mb-px tab-element">
       <template v-for="file of files" :key="file.internalId">
         <li class="mr-2">
           <project-code-file-tab :project-id="editingFiles.projectId" :file-id="file.internalId"
                                  :selected="file.internalId === curFileId"></project-code-file-tab>
         </li>
       </template>
-      <li class="mr-2">
-        <button class="inline-block py-3 px-3 text-sm font-medium text-center rounded-t-lg border-b-2 relative
-                       text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-                @click="addNewFile">
-          <fa-icon icon="plus" size="sm"/>
-        </button>
-      </li>
     </ul>
+    <button class="tab-element inline-block py-3 px-3 text-sm font-medium text-center rounded-t-lg border-b-2 relative
+                   text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+            @click="addNewFile">
+      <fa-icon icon="plus" size="sm"/>
+    </button>
   </div>
   <div ref="editorEl" :class="{'toastui-editor-dark': $store.getters.darkMode}"></div>
 </template>
@@ -67,7 +65,8 @@ export default class ProjectFilesEditor extends Vue {
       el: this.$refs.editorEl,
       initialValue: this.curFile.content,
       autofocus: false,
-      placeholder: this.$t('common.hint.type')
+      placeholder: this.$t('common.hint.type'),
+      height: '50vh'
     });
     this.editor.on('change', () => this.$store.dispatch('projects/editFileContent', newCombinedValue({
       projectId: this.editingFiles.projectId,
@@ -86,9 +85,22 @@ export default class ProjectFilesEditor extends Vue {
 </script>
 
 <style lang="scss" scoped>
-ul {
+.tab-element {
   position: relative;
-  top: 1px;
+  top: 2px;
   z-index: 1;
+}
+
+ul {
+  overflow: auto;
+  scroll-snap-type: x proximity;
+
+  li {
+    scroll-snap-align: start;
+  }
+
+  &::-webkit-scrollbar {
+    height: 0;
+  }
 }
 </style>
